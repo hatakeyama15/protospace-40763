@@ -1,8 +1,7 @@
 class PrototypesController < ApplicationController
 
   before_action :authenticate_user!, only: [:new, :create, :edit, :update, :destroy]
-  before_action :move_to_index, except: [:index, :show] # indexとshowはできる
-
+ 
   def index
     @prototypes = Prototype.all
   end
@@ -18,6 +17,9 @@ class PrototypesController < ApplicationController
 
   def edit
     @prototype = Prototype.find(params[:id])
+    unless @prototype.user == current_user  # 投稿したユーザーとログインユーザーが違えばトップページへ移動する
+      redirect_to action: :index
+    end
   end
 
   def update
@@ -47,12 +49,5 @@ class PrototypesController < ApplicationController
     params.require(:prototype).permit(:title, :catch_copy, :concept, :image).merge(user_id: current_user.id)
   end
 
-  def move_to_index
-    @prototype = Prototype.find(params[:id])
-    unless @prototype.user == current_user  # 投稿したユーザーとログインユーザーが違えばトップページへ移動する
-      redirect_to action: :index
-    end
-  end
- 
 
 end
