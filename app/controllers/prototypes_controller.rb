@@ -11,8 +11,12 @@ class PrototypesController < ApplicationController
   end
 
   def create
-    Prototype.create(prototype_params)
-    redirect_to '/'
+    @prototype = Prototype.new(prototype_params)
+    if @prototype.save
+      redirect_to '/'
+    else
+      render :new, status: :unprocessable_entity
+    end
   end
 
   def edit
@@ -24,11 +28,11 @@ class PrototypesController < ApplicationController
 
   def update
     @prototype = Prototype.find(params[:id])
-      if @prototype.update(prototype_params)
-        redirect_to prototype_path(@prototype.id)
-      else
-        render :edit, status: :unprocessable_entity
-      end
+    if @prototype.update(prototype_params)
+      redirect_to prototype_path(@prototype.id)
+    else
+      render :edit, status: :unprocessable_entity
+    end
   end
 
   def destroy
@@ -48,6 +52,5 @@ class PrototypesController < ApplicationController
   def prototype_params
     params.require(:prototype).permit(:title, :catch_copy, :concept, :image).merge(user_id: current_user.id)
   end
-
 
 end
